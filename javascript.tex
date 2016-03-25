@@ -188,3 +188,140 @@ console.log(myCounter.value); // undefined
 \end{lstlisting}
 
 Ein Vorteil von Java ist die Objektorientierung und auch die literale Syntax um Objekte zu erstellen. Auch Closures kann man ohne Probleme verwenden. Man sollte darauf achten dass man immer mit \lstinline|===| und nicht mit \lstinline|==|, sonst werden die Werte komisch umgewandelt. Auch die Verwendung von Prototypen und \lstinline|with| sollte man vermeiden. Besondere Vorsicht ist bei globalen Variablen, dem Scope und den Einfügeregeln von Semikolons geboten. Auch das Schlüsselwort \lstinline|typeof| und \lstinline|eval| sind nicht zuverlässig.
+
+\section{Typescript}
+
+\subsection{Types}
+
+Typescript hat fast die selben Typen wie Javascript. Zusätzlich kommt noch das Enum, Any und Void hinzu. Das Enum und Void verhalten sich gleich wie in Java. Der Datentyp Any steht für irgendeinen Typ. Man kann Any z.B. verwenden wenn man Benutzereingaben erhält oder Werte von 3rd party libraries. Zudem dient Any der Rückwärtskompatibilität zu normalem Javascript. Der Typ kann natürlich auch weggelassen werden. Listing \ref{lst:types} zeigt einige Codebeispiele.
+
+\begin{lstlisting}[label=lst:typescript-types,caption=Types]
+// Nachfolgende Typen sind gleich wie in Javascript
+var isDone: boolean = false;
+var height: number = 6; // In Typescript gibts auch nur Floating Points Numbers
+var name: string = "bob" // Es können Single oder Double Quotes verwendet werden
+var list:number[] = [1, 2, 3]; // Ein typisierter Array
+
+// Nachfolgende Typen gibt es in JavaScript nicht
+enum Color {Red, Green, Blue};
+var c: Color = Color.Green;
+
+var notSure: any = 4;
+notSure = "maybe a string instead";
+notSure = false; // okay, definitely a boolean
+
+function warnUser(): void {
+	alert("This is my warning message");
+}
+\end{lstlisting}
+
+\subsection{Ambient Declarations}
+
+Damit Typescript problemlos mit herkömmlichem Javascript verwendet werden kann, muss man dem Compiler von Typescript mitteilen, welche Variablen global zur Verfügung stehen. Dieser Mechanismus wird Ambient Declarations genannt. Die Deklarationen für 3rd party libraries werden in einem separaten \lstinline|*.d.ts| abgelegt. Verwendet man beispielsweise die globale \lstinline|process|-Variable von NodeJS, ohne sie vorher zu deklarieren, wird der Compiler eine Fehlermeldung ausspucken. Fügt man aber folgende Anweisung \lstinline|declare var process:any;| ein, lässt sich die Variable verwenden, ohne dass der Compiler reklamiert. Es lassen sich sogar Interfaces von Javascript-Libraries deklarieren. Diese Deklarationen sollte man allerdings mit Vorsicht geniessen, weil man dem Compiler ein Versprechen abgibt, dass diese Variable zur Laufzeit vorhanden ist. Ist sie nicht vorhanden, kann es zu einem Fehler kommen.
+
+\subsection{Functions mit Types und optionalen/default Parametern}
+
+In Typescript lassen sich wie in Javascript benannte oder anonyme Funktionen erstellen. Zusätzlich lassen sich aber die Parameter und der Rückgabewert mit einem Typ versehen. Wenn eine Funktion einer Variable zugewiesen wird, kriegt diese Variable der Typ dieser Funktion. Der Typ einer Funktion setzt sich aus den Typen der Parameter und des Rückgabewerts zusammen. In Typescript ist zudem jeder Funktionsparameter erforderlich. In Javascript hingegen ist jeder Parameter optional. Möchte man optionale Parameter in Typescript haben, muss man diese mit einem Fragezeichen markieren. Zudem kommen die optionalen Parameter immer nach den erforderlichen Parametern. Zudem können auch Default-Parameter mit einem Wert vordefiniert werden. Listing \ref{lst:typescript-functions} zeigt einige Codebeispiele.
+
+\begin{lstlisting}[label=lst:typescript-functions,caption=Functions]
+// Variable hat den Typ (x:number, y:number)=>number
+var myAdd: (x:number, y:number)=>number = function(x: number, y: number): number { 
+	return x+y; 
+};
+
+// Optionale Parameter
+function buildName(firstName: string, lastName?: string) {}
+
+// Default Parameter
+function buildName(firstName: string, lastName = "Smith") {}
+\end{lstlisting}
+
+\section{Interfaces}
+
+Interfaces in Typescript basieren auf dem \textit{duck typing} Prinzip. Das heisst ein Objekt muss nicht unbedingt \lstinline|implements| verwenden und es muss mindestens die Eigenschaften haben, die vom Interface vorgegeben werden. Das Objekt kann aber auch zusätzliche Eigenschaften haben als das Interface und der Code kompiliert trotzdem. Es ist zudem möglich optionale Attribute bei einem Interface zu deklarieren.
+
+\begin{lstlisting}[label=lst:typescript-interfaces,caption=Interfaces]
+interface LabelledValue {
+	label: string;
+	text?: string; // Optionales Attribute
+}
+
+// Funktion welche ein LablledValue nimmt
+function printLabel(labelledObj: LabelledValue) {
+	console.log(labelledObj.label);
+}
+
+// Das Objekt verwendet kein implements hat aber die Eigentschaft label und erfüllt 
+// somit das Interface
+let myObj = {size: 10, label: "Size 10 Object"};
+printLabel(myObj);
+
+
+interface ClockInterface {
+	currentTime: Date;
+	setTime(d: Date); // Methode auf Interface definiert
+}
+
+// Klasse implementiert Interface
+class Clock implements ClockInterface {
+	currentTime: Date;
+	setTime(d: Date) {
+		this.currentTime = d;
+	}
+	constructor(h: number, m: number) { }
+}
+\end{lstlisting}
+
+\section{Classes}
+
+Klassen in Typescript verhalten sich gleich wie in Java. Es gibt sogar abstrakte Klassen. Allerdings sind alle Instanzvariablen standardmässig \lstinline|public|. Zudem gibt es noch \lstinline|private| und \lstinline|protected|, welche sich auch wie in Java verhalten.
+
+\begin{lstlisting}[label=lst:typescript-classes,caption=Classes]
+class Animal {
+	name: string;
+	constructor(theName: string) { this.name = theName; }
+	move(distanceInMeters: number = 0) {
+		console.log(`${this.name} moved ${distanceInMeters}m.`);
+	}
+}
+
+class Snake extends Animal {
+	constructor(name: string) { super(name); }
+	move(distanceInMeters = 5) {
+		console.log("Slithering...");
+		super.move(distanceInMeters);
+	}
+}
+
+class Horse extends Animal {
+	constructor(name: string) { super(name); }
+	move(distanceInMeters = 45) {
+		console.log("Galloping...");
+		super.move(distanceInMeters);
+	}
+}
+
+let sam = new Snake("Sammy the Python");
+let tom: Animal = new Horse("Tommy the Palomino");
+
+sam.move();
+tom.move(34);
+\end{lstlisting}
+
+\section{Modules}
+
+In Typescript gibt es ein Modulsystem. Variablen, Funktionen usw. in einem Modul sind nicht mehr global sichtbar, ausser die welche explizit mit \lstinline|export| öffentlich gemacht wurden. Möchte man etwas von einem anderen Modul konsumieren muss man es mit dem \lstinline|import| in den eigenen Code einbinden. Jede Datei welche ein \lstinline|export| oder \lstinline|import| beinhaltet wird als Modul deklariert. 
+
+\begin{lstlisting}[label=lst:typescript-modules,caption=Modules]
+export const numberRegexp = /^[0-9]+$/;
+
+export class ZipCodeValidator {
+	isAcceptable(s: string) {
+		return s.length === 5 && numberRegexp.test(s);
+	}
+}
+
+import { ZipCodeValidator } from "./ZipCodeValidator";
+
+let myValidator = new ZipCodeValidator();
+\end{lstlisting}
