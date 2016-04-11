@@ -189,6 +189,97 @@ console.log(myCounter.value); // undefined
 
 Ein Vorteil von Java ist die Objektorientierung und auch die literale Syntax um Objekte zu erstellen. Auch Closures kann man ohne Probleme verwenden. Man sollte darauf achten dass man immer mit \lstinline|===| und nicht mit \lstinline|==|, sonst werden die Werte komisch umgewandelt. Auch die Verwendung von Prototypen und \lstinline|with| sollte man vermeiden. Besondere Vorsicht ist bei globalen Variablen, dem Scope und den Einfügeregeln von Semikolons geboten. Auch das Schlüsselwort \lstinline|typeof| und \lstinline|eval| sind nicht zuverlässig.
 
+\section{Javascript einbinden}
+Javascript kann über vier Wege eingebunden werden:
+\begin{description}
+	\item[Inline] Innerhalb des HTML-Tag \lstinline|<script></script>| kann direkt Javascript-Code geschrieben werden.
+	\item[External File] Javascript-Code kann in externe Dateien ausgelagert werden, dafür wird folgends HTML-Tag mit dem Attribut \lstinline|src| benötigt: \lstinline|<script src="something.js"/>|. Der Vorteil der Auslagerung besteht darin, dass Verhalten und Struktur komplett separiert sind und die Wiederverwendung des Javascript-Codes erhöht wird. Ausserdem können die Dateien gecached werden.
+	\item[HTML event handler] Beliebiges Javascript kann in spezifischen Attribute in HTML eingefügt werden: \lstinline|<input type="checkbox" name="options" value="giftwrap" onchange="order.options.giftwrap = this.checked;">|. Oft werden einfach Funktionen aufgerufen.
+	\item[URL mit javascript: protocol] Wie beispielsweise: \lstinline|<a href="javascript:void(0)">login</a>|.
+\end{description}
+
+Die Verarbeitung von Javascript läuft in zwei Phasen ab: In der ersten Phase wird Inline-Javascript ausgeführt und die externen Javascript Files geladen, welche synchron (default), asynchron (\lstinline|<script async>|) oder defered (\lstinline|<script defer>|) ausgeführt werden. Bei async wird der Javascript parallel zum HTML Parsing heruntergeladen und nach dem Download direkt ausgeführt. Bei defer wird der Code auch parallel zum HTML Parsing heruntergeladen aber erst nach dem HTML Parsing ausgeführt (http://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html). In der zweiten Phase werden die Event Handler asynchron ausgeführt. 
+
+\section{Timeout \& Interval}
+\begin{lstlisting}[label=lst:timeout-interval,caption=Timeout \& Interval]
+// Die Funktion f wird nach repetitiv nach Ablauf der Zeit interval mit den Argumenten args ausgeführt.
+long setInterval(function f, unsigned long interval, any args...)
+
+// Die Funktion f wird nach Ablauf der Zeit timeout genau einmal mit den Argumenten args ausgeführt.
+long setTimeout(function f, unsigned long timeout, any args...)
+
+function myFunction() { alert("Hey!"); }
+
+myTimeout = setTimeout(myFunction, 3000);
+clearTimeout(myTimeout);
+
+myInterval = setInterval(myFunction, 1000);
+clearInterval(myInterval);
+\end{lstlisting}
+
+\section{DOM \& CSS Manipulation}
+Mit Javascript wird primär der DOM manipuliert. 
+
+\begin{lstlisting}[label=lst:dom-manipulation,caption=DOM Manipulation]
+// Selektion über ID, ID sollte immer indeutig sein
+var elt = document.getElementById("quack");
+
+// Selektion über Name, Name muss nicht eindeutig sein
+var radiobuttons = document.getElementsByName("favorite_color");
+
+// Selektion über Tag-Name
+var firstpara = document.getElementsByTagName("p")[0];
+var firstParaSpans = firstpara.getElementsByTagName("span");
+
+// Selektion über CSS-Klasse
+var warnings = document.getElementsByClassName("warning");
+
+// Selektion über CSS-Selektoren (HTML5 spezifisch - kennen wir aus jQuery)
+var logs = document.querySelectorAll("#log>span");
+
+// DOM-Elemente erzeugen
+createElement()
+createTextNode()
+createComment()
+createDocumentFragment() // Hier können vorab grosse Strukturen erstellt werden und auf einen Schlag im Browser dargestellt werden, der Benutzer bekommt nichts mit.
+
+appendChild()
+insertBefore()
+removeChild()
+replaceChild()
+
+// CSS Manipulation
+e.style.fontSize = "12pt";
+e.style.font-size = "12pt"; // Achtung: Geht nicht!
+
+// Event-Handlers
+window.onload = function() {...}
+// folgendes ist Equivalent, aber als "schöner" betitelt.
+window.addEventListener("load", function(){...}, false);
+
+// Ajax
+var request = new XMLHttpRequest();
+request.open("GET", "data.json" /* url */);
+request.setRequestHeader("Content-Type", "text/plain");
+request.send(null /* body */);
+request.onreadystatechange = function() {...}
+
+request.onreadystatechange = function() {
+	if (request.readyState === 4 \&\& request.status === 200) {
+	var type = request.getResponseHeader("Content-Type");
+	if (type.match(/^text/)) {
+			// do something with request.responseText()
+		}
+	}
+}
+\end{lstlisting}
+
+Wir wissen, dass die HTML Struktur in-Memory als DOM repräsentiert wird. Wir können auf die einzelnen Nodes über folgende Attribute zugreifen: parentNode, childNodes, firstChild, lastChild, nextSibling, previousSibling, nodeType, nodeValue, nodeName. Als Beispiel \lstinline|document.childNodes[0].childNodes[1];|. HTML Attribute können wir über Javascript-Properties abfragen: \lstinline|var imgurl = image.src;|. Für alle Nicht-HTML Attribute kann setAttribute, getAttribute, hasAttribute und removeAttribute verwendet werden.
+
+Den Inhalt von Elementen kann auf drei Sichtweisen betrachtet werden. Als Beispiel dient \lstinline|<p>This is a <i>simple</i> document.</p>|. Entweder als HTML-String "<p>This is a <i>simple</i> document.</p>", Plain-Text "This is a simple document." oder als Node-Struktur.
+
+InnerHTML ist Content innerhalb des HTML Element und OuterHTML bedeutet den Inhalt des Element sowie das Element selber.
+
 \section{Typescript}
 
 \subsection{Types}
@@ -236,7 +327,7 @@ function buildName(firstName: string, lastName?: string) {}
 function buildName(firstName: string, lastName = "Smith") {}
 \end{lstlisting}
 
-\section{Interfaces}
+\subsection{Interfaces}
 
 Interfaces in Typescript basieren auf dem \textit{duck typing} Prinzip. Das heisst ein Objekt muss nicht unbedingt \lstinline|implements| verwenden und es muss mindestens die Eigenschaften haben, die vom Interface vorgegeben werden. Das Objekt kann aber auch zusätzliche Eigenschaften haben als das Interface und der Code kompiliert trotzdem. Es ist zudem möglich optionale Attribute bei einem Interface zu deklarieren.
 
@@ -272,7 +363,7 @@ class Clock implements ClockInterface {
 }
 \end{lstlisting}
 
-\section{Classes}
+\subsection{Classes}
 
 Klassen in Typescript verhalten sich gleich wie in Java. Es gibt sogar abstrakte Klassen. Allerdings sind alle Instanzvariablen standardmässig \lstinline|public|. Zudem gibt es noch \lstinline|private| und \lstinline|protected|, welche sich auch wie in Java verhalten.
 
@@ -308,7 +399,7 @@ sam.move();
 tom.move(34);
 \end{lstlisting}
 
-\section{Modules}
+\subsection{Modules}
 
 In Typescript gibt es ein Modulsystem. Variablen, Funktionen usw. in einem Modul sind nicht mehr global sichtbar, ausser die welche explizit mit \lstinline|export| öffentlich gemacht wurden. Möchte man etwas von einem anderen Modul konsumieren muss man es mit dem \lstinline|import| in den eigenen Code einbinden. Jede Datei welche ein \lstinline|export| oder \lstinline|import| beinhaltet wird als Modul deklariert. 
 
