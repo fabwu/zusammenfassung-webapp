@@ -201,7 +201,7 @@ Javascript kann über vier Wege eingebunden werden:
 
 Die Verarbeitung von Javascript läuft in zwei Phasen ab: In der ersten Phase wird Inline-Javascript ausgeführt und die externen Javascript Files geladen, welche synchron (default), asynchron (\lstinline|<script async>|) oder defered (\lstinline|<script defer>|) ausgeführt werden. Bei async wird der Javascript parallel zum HTML Parsing heruntergeladen und nach dem Download direkt ausgeführt. Bei defer wird der Code auch parallel zum HTML Parsing heruntergeladen aber erst nach dem HTML Parsing ausgeführt (http://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html). In der zweiten Phase werden die Event Handler asynchron ausgeführt. 
 
-\section{Timeout \& Interval}
+\section{Timeout und Interval}
 \begin{lstlisting}[label=lst:timeout-interval,caption=Timeout \& Interval]
 // Die Funktion f wird nach repetitiv nach Ablauf der Zeit interval mit den Argumenten args ausgeführt.
 long setInterval(function f, unsigned long interval, any args...)
@@ -218,7 +218,7 @@ myInterval = setInterval(myFunction, 1000);
 clearInterval(myInterval);
 \end{lstlisting}
 
-\section{DOM \& CSS Manipulation}
+\section{DOM und CSS Manipulation}
 Mit Javascript wird primär der DOM manipuliert. 
 
 \begin{lstlisting}[label=lst:dom-manipulation,caption=DOM Manipulation]
@@ -283,9 +283,11 @@ InnerHTML ist Content innerhalb des HTML Element und OuterHTML bedeutet den Inha
 
 \section{Typescript}
 
-\subsection{Types}
+\subsection{Javascript Issues}
+Typescript existiert nur, weil in Javascript Unzulänglichkeiten existieren. In Javascript kennen wir nur Objekte und keine Klassen. Es ist kein modulare Aufbau mittels Imports möglich. Die gesamte Sprache ist dynamisch typisiert. Die Unterscheidung zwischen undefinied und null ist merkwürdig. Zudem werden auch Syntax-Fehler nicht abschliessend validiert, da es eine interpretierende Sprache ist.
 
-Typescript hat fast die selben Typen wie Javascript. Zusätzlich kommt noch das Enum, Any und Void hinzu. Das Enum und Void verhalten sich gleich wie in Java. Der Datentyp Any steht für irgendeinen Typ. Man kann Any z.B. verwenden wenn man Benutzereingaben erhält oder Werte von 3rd party libraries. Zudem dient Any der Rückwärtskompatibilität zu normalem Javascript. Der Typ kann natürlich auch weggelassen werden. Listing \ref{lst:types} zeigt einige Codebeispiele.
+\subsection{Types}
+Typescript hat fast die selben Typen wie Javascript. Zusätzlich kommt noch das Enum, Any und Void hinzu. Das Enum und Void verhalten sich gleich wie in Java. Der Datentyp Any steht für irgendeinen Typ. Man kann Any z.B. verwenden wenn man Benutzereingaben erhält oder Werte von 3rd party libraries. Zudem dient Any der Rückwärtskompatibilität zu normalem Javascript. Der Typ kann natürlich auch weggelassen werden. Listing \ref{lst:typescript-types} zeigt einige Codebeispiele.
 
 \begin{lstlisting}[label=lst:typescript-types,caption=Types]
 // Nachfolgende Typen sind gleich wie in Javascript
@@ -417,3 +419,6 @@ import { ZipCodeValidator } from "./ZipCodeValidator";
 
 let myValidator = new ZipCodeValidator();
 \end{lstlisting}
+
+\subsection{Alternativen}
+Neben TypeScript ist in letzter Zeit auch CoffeeScript ziemlich populär geworden. Das Google Web Toolkit (GWT) ist mittlerweile auf dem sinkenden Ast (Java->Javascript).
