@@ -2,7 +2,7 @@
 
 \section{The Basics}
 
-Javascript heisst eigentlich ECMAScript, welche aktuell in Version 6 vorliegt. Browser unterstützen aber nur Version 5.1. Zudem gibt es noch eine \lstinline|strict|-Version der Sprache. Ist der \lstinline|strict|-Modus aktiviert, muss man z.B. alle Variablen mit \lstinline|var| deklarieren. Um den \lstinline|strict|-Modus zu aktivieren muss man \lstinline|"use strict";| als erste Anweisung des Skriptes oder einer Funktion schreiben.
+Javascript heisst eigentlich ECMAScript, welche aktuell in Version 6 vorliegt. Browser unterstützen aber nur Version 5.1. Zudem gibt es noch eine \lstinline|strict|-Version der Sprache. Ist der \lstinline|strict|-Modus aktiviert, muss man z.B. alle Variablen mit \lstinline|var| deklarieren. Um den \lstinline|strict|-Modus zu aktivieren muss man \lstinline|"use strict";| als erste Anweisung des Skriptes oder einer Funktion schreiben. Best Practice: Verwende  \lstinline|strict|-Modus. 
 
 In Javascript gibt es nur Objekte und keine Klassen. Listing \ref{lst:objekte-deklarieren} zeigt einige Code-Beispiele im Umgang mit Objekten.
 
@@ -13,6 +13,7 @@ var bachelorModule = {
 	print: function() { console.log(this.title) }
 };
 bachelorModule.title;
+bachelorModule["title"]; // Als assoziatives Array
 bachelorModule.print();
 
 // Objekt durch Constructor (immer grossschreiben) deklarieren
@@ -20,7 +21,6 @@ function Name(vorname, nachname) {
 	this.vorname = vorname;
 	this.nachname = nachname;
 }
-
 Name.prototype.hello = function(){
 	return "Hello" + this.vorname;
 }
@@ -47,6 +47,7 @@ var otherModule = {
 	set title(value) {}
 };
 console.log(otherModule.title); // So kann auf Getter zugegriffen werden
+console.log(typeof a); //typeof-Operator
 \end{lstlisting}
 
 In JavaScript enthält jedes Objekt implizit ein Property dass auf einen Prototypen zeigt. Diese Prototypen sind verkettet, wobei das letzte Objekt der Kette auf den \lstinline|null|-Prototyp zeigt. Wird ein Property im Objekt selbst nicht gefunden, wird die Prototyp-Kette danach durchsucht. Mit Hilfe der Methode \lstinline|Object.getPrototypeOf()| (ES5) kann explizit auf den Prototype zugegriffen werden. Abbildung \ref{fig:prototyp} zeigt wie die Properties \lstinline|vorname| und \lstinline|nachname| beim jeweiligen Objekt sind und die Methode \lstinline|hello()| von beiden Objekten beim Prototyp nachgeschlagen. Der Prototyp selbst, zeigt auf den \lstinline|null|-Prototyp.
@@ -103,7 +104,7 @@ var sum = a.reduce(function(x,y) {return x+y;}, 0);
 console.log(sum); // 21
 \end{lstlisting}
 
-In JavaScript sind Funktionen ebenfalls Objekte. Sie erhalten als unsichtbaren Parameter das Keyword \lstinline|this|. Der Wert von \lstinline|this| ist davon abhängig wie die Funktion aufgerufen wird. Listing \ref{lst:methoden-aufruf} zeigt wie Funktionen deklariert und aufgerufen werden. Es gibt vier Möglichkeiten eine Funktion aufzurufen.
+In JavaScript sind Funktionen ebenfalls Objekte. Sie erhalten als unsichtbaren Parameter das Keyword \lstinline|this|. Der Wert von \lstinline|this| ist davon abhängig wie die Funktion aufgerufen wird. Listing \ref{lst:methoden-aufruf} zeigt wie Funktionen deklariert und aufgerufen werden. Es gibt vier Möglichkeiten eine Funktion aufzurufen (Invocation Patterns).
 
 \begin{lstlisting}[label=lst:methoden-aufruf,caption=Methoden aufrufen]
 // Anonyme Funktion erstellen und an Variable binden
@@ -169,7 +170,7 @@ function scopeTest() {
 
 In JavaScript haben Funktionen Zugriff zum äusseren Scope. Weil auch jede Funktion ein Objekt ist, ist es möglich Closures zu erstellen. Ein Closure kann auch zu einem späteren Zeitpunkt auf seine äusseren Variablen zugreifen, auch wenn dieser Code schon abgearbeitet wurde. Dadurch lassen sich z.B. private Eigenschaften für Objekte erstellen, wie Listing \ref{lst:closure} zeigt.
 
-\begin{lstlisting}[label=lst:scope,caption=Scope]
+\begin{lstlisting}[label=lst:closure,caption=Closure]
 var myCounter = (function () {
 	var value = 0;
 	return {
