@@ -190,7 +190,7 @@ console.log(myCounter.value); // undefined
 
 Ein Vorteil von Java ist die Objektorientierung und auch die literale Syntax um Objekte zu erstellen. Auch Closures kann man ohne Probleme verwenden. Man sollte darauf achten dass man immer mit \lstinline|===| und nicht mit \lstinline|==|, sonst werden die Werte komisch umgewandelt. Auch die Verwendung von Prototypen und \lstinline|with| sollte man vermeiden. Besondere Vorsicht ist bei globalen Variablen, dem Scope und den Einfügeregeln von Semikolons geboten. Auch das Schlüsselwort \lstinline|typeof| und \lstinline|eval| sind nicht zuverlässig.
 
-\section{Javascript einbinden}
+\subsection{Javascript einbinden}
 Javascript kann über vier Wege eingebunden werden:
 \begin{description}
 	\item[Inline] Innerhalb des HTML-Tag \lstinline|<script></script>| kann direkt Javascript-Code geschrieben werden.
@@ -201,7 +201,7 @@ Javascript kann über vier Wege eingebunden werden:
 
 Die Verarbeitung von Javascript läuft in zwei Phasen ab: In der ersten Phase wird Inline-Javascript ausgeführt und die externen Javascript Files geladen, welche synchron (default), asynchron (\lstinline|<script async>|) oder defered (\lstinline|<script defer>|) ausgeführt werden. Bei async wird der Javascript parallel zum HTML Parsing heruntergeladen und nach dem Download direkt ausgeführt. Bei defer wird der Code auch parallel zum HTML Parsing heruntergeladen aber erst nach dem HTML Parsing ausgeführt (http://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html). In der zweiten Phase werden die Event Handler asynchron ausgeführt. 
 
-\section{Timeout und Interval}
+\subsection{Timeout und Interval}
 \begin{lstlisting}[label=lst:timeout-interval,caption=Timeout \& Interval]
 // Die Funktion f wird nach repetitiv nach Ablauf der Zeit interval mit den Argumenten args ausgeführt.
 long setInterval(function f, unsigned long interval, any args...)
@@ -218,7 +218,7 @@ myInterval = setInterval(myFunction, 1000);
 clearInterval(myInterval);
 \end{lstlisting}
 
-\section{DOM und CSS Manipulation}
+\subsection{DOM und CSS Manipulation}
 Mit Javascript wird primär der DOM manipuliert. 
 
 \begin{lstlisting}[label=lst:dom-manipulation,caption=DOM Manipulation]
@@ -422,3 +422,239 @@ let myValidator = new ZipCodeValidator();
 
 \subsection{Alternativen}
 Neben TypeScript ist in letzter Zeit auch CoffeeScript ziemlich populär geworden. Das Google Web Toolkit (GWT) ist mittlerweile auf dem sinkenden Ast (Java->Javascript).
+
+\section{Libraries und Werkzeuge}
+
+\subsection{Java Script Libraries für DOM-Manipulation}
+\begin{itemize}
+	\item jQuery: Absoluter König.
+	\item YUI: Mittlerweile gestorben.
+	\item mootools: Verhasst von Markus Ineichen.
+	\item dojo toolkit
+\end{itemize}
+
+\subsection{Java Script Libraries für CSS}
+\begin{itemize}
+	\item bootstrap: Einfach und beliebt. CSS/Javascript Framework. Verinnerlicht den mobile first Ansatz, cooles Grid System.
+	\item modernizr: Macht alte Browser modern!
+	\item Kendo UI
+	\item HTML5 Boilerplate: Gutes Template für eine HTML5 Seite. Beinhaltet HTML Template, Normalize.css, jQuery, Modernizer, Analytics u.v.m. Alternativ kann man sein Projekt auch mit yeoman aufsetzen.
+\end{itemize}
+
+\subsection{Java Script Libraries für UI}
+Das Javascript erzeugt eigentlich die Seite und wird nicht vom Server aufbereitet.
+\begin{itemize}
+	\item jQuery UI
+	\item Angular JS
+	\item Sencha
+	\item ext js
+	\item kendo ui
+\end{itemize}
+
+\subsection{Java Script Libraries für Build and Managing}
+\begin{itemize}
+	\item Grunt: Task-Runner.
+	\item Gulp: Task-Runner als Nachfolger von Grunt - einfachere Konfiguration.
+	\item require js: Definieren von Modulen und Abhängigkeiten zu anderen Modulen.
+	\item yeoman: Erstellt das Gerüst von neuen Web Applikationen (scaffolding).
+	\item bower: Package Manager für "Front-End Assets" für den Browser - JavaScrpt, HTML, CSS, Fonts, Images, etc. 
+	\item jslint: Starke Syntax-Prüfung.
+	\item jshint: Nachfolger von jslint, nicht mehr so stark. Wird nun eher präferiert.
+\end{itemize}
+Die Task-Runner sind vergleichbar mit ANT. Ich konfiguriere Tasks, welche beispielsweise Typescript zu Javascript kompilieren. Oder für folgendes: Linting, Testing, Concatenation,
+Minification, Deployment. Linter prüfen Syntax und mögliche Fehler in Javascript.
+
+\subsection{Qual der Wahl!}
+Der Need definiert den Einsatz der jeweiligen Bibliothek. Im Web-Umfeld gibt es im Wochen-Zyklus neue Frameworks. Daher muss man Vorsicht walten lassen. Auf aktuelle aber bewährte Frameworks setzen!
+
+Zudem kämpfen wir leider auch heute noch mit den Browser-Inkompatibilitäten. Wobei es langsam aber sicher immer besser wird. IE 6 ist nun endgültig vom Tisch. Auch IE 7 hat noch 1 Prozent Marktanteil.
+
+\subsection{jQuery}
+JQuery hilft uns im Bezug zu den Browser-Inkompatibilitäten. Es abstrahiert den Browser mit dem umständlichen und verbosen W3C DOM API. Wir können den DOM manipulieren, CSS anpassen, auf Browser-Events reagieren und AJAX-Requests absetzen. Wir können die Produktivität steigern, jedoch hat es keinen OO-Approach. Es gibt unterschiedliche Libraries:
+
+\begin{itemize}
+\item jQuery: Browser Facade
+\item jQuery UI: User Interface Komponenten
+\item jQuery Mobile: mobile UI Framework
+\item QUnit: unit/component Testing Framework
+\item Sizzle: CSS Selektoren (leichtgewichtiger)	
+\end{itemize}
+
+\begin{lstlisting}[label=lst:jquery-samples,caption=jQuery]
+// In jQuery kann man alles aneinanderketten (chanining)
+$("p.details").css("background-color", "yellow").show("fast");
+
+// Es gibt 4 Anwendungen um jQuery aufzurufen:
+// 1. Selektion
+$(selector, context (optional)); 
+// 2. Wrapper
+$(document); $(window);
+// 3. Erzeugen von HTML Elementen
+var img = $("<img>", {src: url, css: {...}});
+// 4. Onload
+jQuery(function() {
+	\\ jQuery code
+});
+
+// Getters/Setters
+$("form").attr("action");
+$("#icon").attr("src", "icon.gif");
+$("#banner").attr({
+	src: "banner.gif",
+	alt: "Advertisement",
+	width: 720, height: 64
+});
+$("a").attr("target", "_blank");
+
+// CSS
+$("h1").css("font-weight");
+$("h1").css("fontWeight");
+$("h1").css("font"); // Error: Compound style!
+$("h1").css("font-variant", "smallcaps");
+$("div.note").css("border", "solid black 2px");
+$("h1").css({
+	backgroundColor: "black",
+	border: "dotted black 4px"
+});
+
+// Adding CSS classes
+$("h1").addClass("hilite"); // Add a class
+$("h1+p").addClass("hilite first"); // Add 2 classes
+
+// Removing CSS classes
+$("p").removeClass("hilite"); // Remove a class
+$("p").removeClass("hilite first"); // Multiple classes
+$("div").removeClass(); // Remove all classes
+
+// Toggling CSS classes
+$("tr:odd").toggleClass("oddrow"); // Adds or remove the class
+$("p").hasClass("first") // Does any p element have this class?
+$("#lead").is(".first") // This does the same thing
+$("#lead").is(".first.hilite") // is() is more flexible than hasClass()
+
+// Content
+var title = $("head title").text() // Get document title
+var headline = $("h1").html() // Get html of first <h1> element
+$("h1").text(function(n,current) { // Give each heading a selection number
+	return (n+1) + ": " + current
+});
+
+// Event Handlers
+$("p").click(function() { $(this).css("background-color", "gray"); });
+
+blur() focusin() mousedown() mouseup()
+change() focusout() mouseenter() resize()
+click() keydown() mouseleave() scroll()
+dblclick() keypress() mousemove() select()
+error() keyup() mouseout() submit()
+focus() load() mouseover() unload()
+
+// jQuery verwendet ein eigenes Event Objekt, das jedem Event Handler mitgegeben wird und Details über den Event enthält. Properties von "nativen" Event Objekten werden kopiert und ergänzt.
+
+// jQuery Animationen
+$("img").animate({ height: 0 });
+
+fadeIn() fadeOut() fadeTo()
+show() hide() toggle()
+slideDown() slideUp() slideToggle()
+animate()
+
+// Ajax
+setInterval(function() { $("#stats").load("status_report.html"); },60000);
+
+// Load external script - Dynamically load a script from some other server
+jQuery.getScript("http://example.com/js/widget.js");
+
+// Load external script - Load a library and use it once it loads
+jQuery.getScript("js/jquery.my_plugin.js", function() {
+	$('div').my_plugin(); // Use the library we loaded
+});
+
+// JSON
+jQuery.getJSON("data.json", function(data) {
+	// data enthält das Objekt aus data.json
+});
+
+// Ajax
+jQuery.ajax({
+	type: "GET", // The HTTP request method.
+	url: url, // The URL of the data to fetch.
+	data: null, // Don't add any data to the URL.
+	dataType: "script", // Execute the response as a script once we get it.
+	success: callback // Call this function when done.
+});
+
+\end{lstlisting}
+
+\subsection{Beispiel Snippets}
+
+\begin{lstlisting}[label=lst:sample-requirejs,caption=sample require.js]
+requirejs.config({
+	baseUrl: "scripts",
+	paths: {
+		jquery: '../bower_components/jquery/dist/jquery'
+	}
+});
+
+require(['jquery', 'Go', 'GoBoardView', 'GoBoardModel', function ($, Go, GoBoardView, GoBoardModel, GoGameControl) {
+	define('GoBoardModel', ['Go'], function(Go) {
+		"use strict";
+	/**
+	* Create a new (empty) go board.
+	* @param size the size of the go board
+	* @constructor
+	*/
+	function GoBoardModel(size) {
+	this.size = size;
+	this.init();
+}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:sample-grunt,caption=sample runtfile]
+module.exports = function(grunt) {
+	grunt.initConfig({
+		jshint: {
+			files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+			options: {
+				globals: {
+					jQuery: true
+				}
+			}
+		},
+		watch: {
+			files: ['<%= jshint.files %>'],
+			tasks: ['jshint']
+		}
+	});
+
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.registerTask('default', ['jshint']);
+};
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:sample-gulp,caption=sample gulp]
+// Include gulp
+var gulp = require('gulp');
+
+// Include Our Plugins
+var jshint = require('gulp-jshint');
+var sass = require('gulp-sass');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var rename = require('gulp-rename');
+
+// Lint Task
+gulp.task('lint', function() {
+	return gulp.src('js/*.js')
+	.pipe(jshint())
+	.pipe(jshint.reporter('default'));
+});
+
+// Compile Our Sass
+gulp.task('sass', function() {
+	return gulp.src('scss/*.scss')
+	.pipe(sass())
+	.pipe(gulp.dest('dist/css'));
+});
+\end{lstlisting}
