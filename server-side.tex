@@ -41,3 +41,266 @@ Wir unterscheiden zwischen \emph{Collection Resources} (../Resource)  und \emph{
 \caption{Element-Interface}
 \label{fig:rest-element-interface}
 \end{figure}
+
+\section{Authentifizierung}
+
+Nach Woods gehört \textit{Do-It-Yourself Security} zu den Top 10 Mistakes in der Software-Entwicklung. Wir sollten besser anerkannte Methoden verwenden, wie:
+\begin{itemize}
+	\item Basic / Digest
+	\item The way Amazon does ist
+	\item Json Web Tokes (JWT)
+	\item OAuth 2.0
+	\item WS Security
+	\item SAML
+	\item Sessions
+	\item OAuth 1.0a
+\end{itemize}
+
+\subsection{Basic Authentication RFC 2617}
+Username und Passwort werden bei jedem Request über HTTP Headers mitgeschickt. Im ersten Schritt greift der Client auf eine geschützte URL zu. Der Webserver fordert eine Authentifizierung für den angefragten Bereich (Realm) im HTTP Response Header:
+
+\begin{lstlisting}[caption=HTTP Response Header]
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Basic realm="RealmName"
+\end{lstlisting}
+
+Der Client schickt daraufhin Username und Passwort im HTTP Request Header \verb|Username:Passwort| in Base64 codiert. Die Codierung ist dafür, dass der Username und Passwort letztendlich aus jedem beliebigen Zeichen bestehen kann. Denn der Base64-Zeichensatz ist beschränkt - so gibt es keine Probleme mit dem Header.
+
+\begin{lstlisting}[caption=HTTP Request Header]
+Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+\end{lstlisting}
+
+Achtung: Basic Authentication ist nicht sicher. Das Passwort wird im Klartext über das Netzwerk versendet und zwar immer wieder.
+
+\subsection{Digest Authentication}
+
+In dieser Variante wird nicht das Passwort sondern nur der Digest (MD5 checksum) mitgeschickt, welcher aus einer Reihe von Werten berechnet wird. Der Algorithmus MD5 ist in der Spezifikation fix vorgeschrieben. Der Server verwendet zusätzlich einen \textit{nonce} und \textit{opaque} Wert. Der Ablauf ist wie folgt:
+
+\begin{enumerate}
+	\item Client greift auf URI zu.
+	\item Server fordert Authentifizierung für einen Bereich (Realm) und schickt \textit{none} und \textit{opaque} Werte
+	\item Der Client berechnet Digest Werte und fügt sie dem Request hinzu.
+	\item Server prüft Digest, falls erfolgreich wird Zugriff auf
+	URI gewährt und Server schickt (optional) Information
+	zur Authentifizierung (zum Beispiel nächstes nonce).
+\end{enumerate}
+
+\begin{lstlisting}[caption=HTTP Response Header]
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Digest
+realm="testrealm@host.com",
+qop="auth,auth-int",
+nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+opaque="5ccc069c403ebaf9f0171e9517f40e41"
+\end{lstlisting}
+
+\begin{itemize}
+	\item nonce: Eindeutiger, einmal erzeugter String.
+	\item opaque: Vom Server definierter String, der zurückgeschickt wird.
+	\item qop: Quality of protection: auth oder auth-int.
+\end{itemize}
+
+\begin{lstlisting}[caption=HTTP Request Header]
+Authorization: Digest username="Mufasa",
+realm="testrealm@host.com",
+nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+uri="/dir/index.html",
+qop=auth,
+nc=00000001,
+cnonce="0a4f113b",
+response="6629fae49393a05397450978507c4ef1",
+opaque="5ccc069c403ebaf9f0171e9517f40e41"
+\end{lstlisting}
+
+\begin{itemize}
+	\item response: Berechneter Digest Wert
+	\item username: Benutzername
+	\item uri: URI (wiederholt wegen Proxies)
+	\item gop: Eine der vom Server gegebenen Alternativen
+	\item cnonce: nonce vom Client (wird für Digest verwendet)
+	\item nc: Anzahl Requests die der Client mit diesem Nonce
+	geschickt hat
+\end{itemize}
+
+Der MD5 Digest wird aus Username, Realm, Passwort, nonce, nc, cnonce, gop und URI berechnet. Auch die Digest Authentication ist keine starke Authentifizierungs-Methode im Vergleich zu Public/Private Key Mechanismen. Ein \textit{eavesdropper} kann sich problemlos dazwischen schaukeln. Trotzdem ist es stärker als die Basic Authentication. 
+
+\newpage
+\subsection{Amazon}
+
+Amazon verwenden einen MAC (signiertem Digest-Wert). Dieser ist aus \textit{SecretAccessKey} und einem String berechnet, welcher das HTTP-Verb, Content, Content-Type, Date, Headers und Resource Infos enthält. Es gibt mittlerweile verschiedene Versionen.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\linewidth]{fig/amazon-steps-1-3}
+\caption{Amazon Step 1-3}
+\label{fig:amazon-steps-1-3}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\linewidth]{fig/amazon-steps-4-6}
+\caption{Amazon Step 4-6}
+\label{fig:amazon-steps-4-6}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\linewidth]{fig/s3getrequest}
+\caption{S3 Get-Request}
+\label{fig:s3getrequest}
+\end{figure}
+
+\newpage
+\begin{lstlisting}[caption=S4 POST-Request mit Security Felder]
+POST https://iam.amazonaws.com/ HTTP/1.1
+Authorization: AWS4-HMAC-SHA256
+Credential=AKIDEXAMPLE/20110909/us-east-
+1/iam/aws4\_request, SignedHeaders=content-type;host;xamz-
+date,
+Signature=ced6826de92d2bdeed8f846f0bf508e8559e98e4b01991
+14b84c54174deb456c
+host: iam.amazonaws.com
+Content-type: application/x-www-form-urlencoded;
+charset=utf-8
+x-amz-date: 20110909T233600Z
+Action=ListUsers\&Version=2010-05-08
+
+CanonicalRequest =
+HTTPRequestMethod + '\n' +
+CanonicalURI + '\n' +
+CanonicalQueryString + '\n' +
+CanonicalHeaders + '\n' +
+SignedHeaders + '\n' +
+HexEncode(Hash(RequestPayload))
+\end{lstlisting}
+
+\subsection{JSON Web Tokens (JWT)}
+
+Dient der sicheren Übertragung von JSON Objekten. Basiert auf einem Standard (RFC7519). Ein JWT besteht aus einem Header und einem Payload. Im Header wird der Algorithmus angegeben:
+\begin{itemize}
+	\item HS256 = HMAC SHA-256
+	\item RS256 = RSASSA-PKCS1-v1\_5 SHA-256
+	\item ES256= ECDSA P-256 curve SHA-256
+\end{itemize}
+
+\begin{lstlisting}[caption=JWT Header]
+{"typ":"JWT",
+"alg":"HS256"}
+\end{lstlisting}
+
+Im Payload sind die benutzerdefinierten Attribute (Claims) vorhanden. Es gibt drei Typen Attributen: Standard, Public, Private:
+
+\begin{lstlisting}[caption=JWT Payload]
+{"iss": "www.hslu.ch",
+"sub": "zakoller",
+"name": "Thomas Koller",
+"admin": true}
+\end{lstlisting}
+
+Standard-Claims:
+\begin{itemize}
+	\item iss: Issuer
+	\item sub: Subject
+	\item aud: Audience
+	\item exp: Expiration Time
+	\item nbf: Not Before
+	\item iat: Issued At (Time)
+	\item jti: JWT Id
+\end{itemize}
+
+Der Header sowie der Payload sind Base64 codiert. Die Signatur beinhaltet Header sowie Payload, getrennt durch einen Punkt. Der Token wird aus der Signature und einem Secret berechnet.
+
+\begin{lstlisting}[caption=JWT Signature]
+signature = base64UrlEncode(header) + "." + base64UrlEncode(payload);
+token = HMACSHA256(signature, secret)
+\end{lstlisting}
+
+JWT sind kompakter und kleiner als XML. Es dient der einfachen Berechnung der Signature und das Parsing im Web-Umfeld wird durch das JSON-Format erleichtert. Und es ist vollständig \textbf{selfcontained}! Es wird für die Authentifizierung verwendet.
+
+\subsection{OAuth 2.0}
+
+\textit{The OAuth 2.0 authorization framework enables a third-party
+application to obtain limited access to an HTTP service, either on
+behalf of a resource owner by orchestrating an approval interaction
+between the resource owner and the HTTP service, or by allowing
+the third-party application to obtain access on its own behalf. This
+specification replaces and obsoletes the OAuth 1.0 protocol
+describedin RFC 5849.}
+
+Wir stellen uns ein einfaches Szenario vor mit drei Elementen vor:
+
+\begin{itemize}
+	\item Benutzer Hans mit Ferien Fotos
+	\item Photo Store Service
+	\item Print Service
+\end{itemize}
+
+Hans ist beim Photo Store Service registriert und hat mehrere Bilder gespeichert. Nun möchte er über den Print Service die Bilder drucken. Dafür müssen die Bilder vom Photo Store Service zum Print Service gelangen und zwar geschützt. Dafür gibt es mehrere Möglichkeiten:
+
+\begin{itemize}
+	\item Benutzer gibt dem Print Service den Benutzernamen sowie das Passwort für seinen Account beim Photo Store Service bekannt. Dies ist jedoch sehr ungünstig: Print Service kennt das Login, Print Service kann auf alle Daten zugreifen, Benutzer kann nur durch Passwort-Änderung den Zugriff verweigern, falls der Print Service kompromittiert wird sind alle anderen Dienste auch kompromittiert, Print Service muss eine Password Authentication durchführen.
+	
+	\item OAuth2 verwenden
+\end{itemize}
+
+Der OAuth2 Basic Flow sieht wie folgt aus:
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{fig/oauth2flow}
+\caption{OAuth2 Basic Flow}
+\label{fig:oauth2flow}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig/oauth2flow-refresh}
+	\caption{OAuth2 Flow with Refresh}
+	\label{fig:oauth2flow-refresh}
+\end{figure}
+
+Rollen:
+\begin{itemize}
+	\item Der \textbf{Resource Owner} besitzt die Ressourcen auf dem Resource Server (Eigentümer der Bilder auf Photo Store Service ist Hans).
+	
+	\item Auf dem \textbf{Resource Server} sind die Ressourcen abgelegt (Auf dem Photo Store Service sind die Bilder abgelegt).
+	
+	\item Der \textbf{Client} ist die Drittanwendung, welche auf die Ressourcen zugreifen möchten (Der Print Service möchte auf die Bilder des Photo Store Service zugreifen).
+	
+	\item Der \textbf{Authorization Server} authentisiert den Resource Owner und stellt Tokens für den Client zur Verfügung.
+\end{itemize}
+
+Client Types:
+\begin{itemize}
+	\item \textbf{Confidential} Clients können das Passwort sicher speichern (Webapplikation auf WebServer).
+	
+	\item \textbf{Public} Clients können das Passwort nicht sicher speichern (Browserbasierte App, native App auf Device).
+\end{itemize}
+
+Es existieren verschiedene Methoden um auf mittels Authorization Grant ein Zugriffstoken zu bekommen:
+
+\textbf{Authorization Code}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{fig/authorization-code}
+\caption{Authorization Code}
+\label{fig:authorization-code}
+\end{figure}
+
+\newpage
+\textbf{Implicit}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig/implicit-grant}
+	\caption{Implicit Grant}
+	\label{fig:implicit-grant}
+\end{figure}
+
+\textbf{Resource Owner Password Credentials}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig/password-credential-grant}
+	\caption{Password Credential Grant}
+	\label{fig:password-credential-grant}
+\end{figure}
+
+\textbf{Client Credentials} (Nicht weiter vertieft)
