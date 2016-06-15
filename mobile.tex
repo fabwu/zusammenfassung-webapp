@@ -1,1 +1,151 @@
 \chapter{Mobile Web App}
+
+Eine App als Web-Applikation zu entwickeln, bringt folgende Vorteile:
+
+\begin{itemize}
+	\item Läuft grundsätzlich auf allen Plattformen
+	\item Einfacher Update-Prozess (für alle Applikationen gleich)
+	\item Developer: Web-Knowhow vs. natives Mobile-Knowhow
+	\item Kosten: Entwicklung nur 1x nötig (nicht 1x pro Plattform)
+	\item Leichtgewichtig: Keine Installation nötig (1-time Usage)
+	\item Synergien: Ggf. existierende Desktop-Web-Plattform
+	\item Zunehmend mehr native Fähigkeiten mit HTML-5 (Kamera, Persistenz, Location, etc.)
+\end{itemize}
+
+Zudem nimmt der Anteil an mobilen Geräten laufend zu, wobei der Desktop-Markt abnimmt. Auch Suchmaschinen bevorzugen Seiten in ihrem Index, welche \textit{mobile-friendly} implementiert sind. Traditionelle Webseiten haben folgende Probleme auf mobilen Geräten:
+
+\begin{itemize}
+	\item Limitierte Display-Grösse
+	\item Portrait / Landscape Modes
+	\item Interaktion: Touch != Maus, Gesten
+	\item Unterschiedliche Browser (CSS, Javascript)
+	\item Kein Zugriff auf HW Resourcen (Kamera, Location, Storage, etc.) oder SW Resourcen (Kontakte, etc.)
+\end{itemize}
+
+Die oben aufgeführten Probleme werden mit folgenden Toolkits adressiert:
+
+\begin{itemize}
+	\item Bootstrap
+	\item Sencha Touch
+	\item Ionic
+	\item jQueryMobile
+	\item Cordova / Phonegap
+\end{itemize}
+
+Bei jQueryMobile gibt es verschiedene Grades: Grade C kommt nur mit Basis HTML auf, Grade B verwendet kein Ajax und Grad A nutzt alle gängigen Technologien. Es werden CSS- und JS-Files benötigt. Es lohnt sich die Dateien über ein CDN auszuliefern.
+
+\section{jQuery Mobile einbinden}
+\begin{lstlisting}[language=HTML,label=lst:jquery-einbinden,caption=Einbinden von jQuery Mobile]
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<!-- Dient der Skalierung -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="stylesheet" href="vendor/jquery.mobile-1.4.5.min.css" />
+	<script src="vendor/jquery-1.11.2.js"></script>
+	<script src="vendor/jquery.mobile-1.4.5.min.js"></script>
+</head>
+</html>
+
+<!-- Oder über CDN -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-
+1.4.5.min.js"></script>
+\end{lstlisting}
+
+\section{Seiten in jQuery Mobile}
+\begin{lstlisting}[language=HTML,label=lst:jquery-seiten,caption=Seiten in jQuery Mobile]
+<!-- Einzelne Seiten -->
+<div id="page1" data-role="page">
+	<p><a href="#page2">Page2</a></p>
+</div>
+
+<div id="page2" data-role="page">
+	<p><a href="#page1">Page1</a></p>
+</div>
+
+<!-- Seitenaufbau -->
+<div id="page3" data-role="page">
+	<div data-role="header">
+		<h2>Title</h2>
+	</div>
+	<div data-role="content">
+		<p>Hello Page</p>
+	</div>
+	<div data-role="footer">
+		<h4>Web App Development</h4>
+	</div>
+</div>
+
+<!-- Listen -->
+<div data-role="content">
+	<ul data-role="listview" data-inset="true">
+		<li>Italy 2012</li>
+		<li>China 2014</li>
+	</ul>
+</div>
+
+<!-- Navigation in Listen -->
+<div data-role="content">
+	<ul data-role="listview" data-inset="true">
+		<li><a href="#travelDetails">Italy 2012</a></li>
+		<li><a href="#travelDetails">China 2014</a></li>
+	</ul>
+</div>
+
+<!-- Transitions -->
+<ul data-role="listview" data-inset="true">
+	<li><a href="#travelDetails" data-transition="pop">Italy2012</a></li>
+	<li><a href="#travelDetails" datatransition="slidedown">China 2014</a></li>
+	<li><a href="#travelDetails" datatransition="fade">Cambodia 2015</a></li>
+</ul>
+\end{lstlisting}
+
+Nebst \verb|div|-Elementen sind auch HTML5 Strukturelemente erlaubt. Die \verb|data-role| muss dennoch gesetzt sein. jQuery Mobile verändert \textit{under the hood} die Standardelemente.
+
+\section{Themes und Swatches}
+Das Grundlayout wird als Theme bezeichnet. Innerhalb eines Themes gibt es 5 oder mehr Swatches. Ein Swatch kann mittels \verb|data-theme="a"| gesetzt werden. Das Swatch wird auf die Unterelemente vererbt. Aber jedes Element kann das geerbte Swatch überschreiben. Swatches können interkativ mit dem Theme Roller erstellt werden.
+
+\section{Cordova}
+Mittels Cordova kann man seine Webapp in eine native App verpacken. Die Webapp muss dafür nicht angepasst werden und basiert noch immer auf HTML5, CSS3 und Javascript. Cordova erlaubt den Zugriff auf Resourcen des Geräts über Plugins. Beispielsweise können Informationen über Batterie, Netzwerk, Device Info, GPS, Kamera, etc. ergaunert werden. Es ist darauf zu achten, dass das Zielsystem (Browser wie IE, Firefox, Chrome) einen Zugriff auf die Ressourcen anbieten.
+
+Phonegap wurde von Nitobi entwickelt und später an Adobe verkauft. Die Codebase wurde anschliessend an Apache überlassen jedoch musst ein neuer Name her: Apache Cordova. Phonegap ist nun eine Distribution von Cordova, welche eine einfache Einbindung in Adobe Services erlaubt. Beide Distributionen sind \textit{free Software}.
+
+\begin{lstlisting}[label=lst:Cordova,caption=Cordova]
+npm install -g cordova
+cordova -d create travelBlog com.hslu.travelBlog TravelBlog
+cd travelBlog
+cordova platfrom add android
+cordova prepare android
+cordova compile android
+cordova emulate android
+
+// Plugins aktivieren
+cordova plugin add org.apache.cordova.camera
+cordova plugin add org.apache.cordova.media-capture
+cordova plugin add org.apache.cordova.media
+\end{lstlisting}
+
+\begin{lstlisting}[language=Javascript,label=lst:cordova-javascript,caption=Cordova Javascript Camera]
+
+navigator.camera.getPicture(
+	onSuccess,
+	onFail, 
+	{ quality: 50, destinationType: Camera.DestinationType.FILE_URI }
+);
+
+function onSuccess(imageURI) {
+	var image = document.getElementById('myImage');
+	image.src = imageURI;
+}
+
+function onFail(message) {
+	alert('Failed because: ' + message);
+}
+\end{lstlisting}
+
+\section{Fazit}
+Auch mit Web-Technologien können mobile Applikationen entwickelt werden. WebApp können über native Apps verteilt werden. Browser Support nimmt stetig zu. 
