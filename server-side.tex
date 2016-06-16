@@ -1,5 +1,10 @@
 \chapter{Server Side}
 
+\section{PHP}
+
+PHP unterstützt Klassen, wer hätte das gedacht. \lstinline|clone| kopiert Objekte, \lstinline|__clone| kann für Klassen implementiert werden. Mit \lstinline|__get()| und \lstinline|__set| kann der Zugriff auf beliebige Properties implementiert werden. Mit \lstinline|__call| können beliebige Methoden-Aufrufe
+abgefangen und weiter geleitet werden. Serialisierung und Deserialisierung mittels \lstinline|__sleep| und \lstinline|__wakeUp|.
+
 \section{REST}
 Wir haben RESTlos genug von diesem Thema! REST steht noch immer für Representational State Transfer. Es basiert auf HTTP und ist zustandslos. REST eignet sich gut zum cachen. REST beschreibt letztendlich nur die \emph{korrekte} Verwendung von diversen Technologien:
 
