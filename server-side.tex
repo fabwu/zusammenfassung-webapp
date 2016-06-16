@@ -47,6 +47,89 @@ Wir unterscheiden zwischen \emph{Collection Resources} (../Resource)  und \emph{
 \label{fig:rest-element-interface}
 \end{figure}
 
+\newpage
+
+\section{Javascript}
+
+\subsection{Node.js}
+
+Node.js ist eine Javascript Laufzeitumgebung, die zudem nützliche Bibliotheken (File System, Crypto, Buffers, Modules usw.) mitbringt. Die Verarbeitung verläuft asynchron und die Architektur ist event-basiert. Node.js ist leichtgewichtig und dadurch gut skalierbar.
+
+Mit dem Modulsystem von Node.js lässt sich eine Anwendung gut unterteilen. Pro Datei wird ein Modul definiert und angegeben welche Elemente exportiert werden möchten. Funktionen und Properties können entweder der \lstinline|exports|-Variable zugewiesen werden oder man verwendet den Prototyp und exportiert diesen komplett über \lstinline|module.exports|. Die letzte Variante ist als eine Art Singleton zu verstehen, weil das Object nur einmal erstellt wird.
+
+\begin{lstlisting}[caption=Module in Node.js]
+// circle.js
+exports.area = function(r) {
+	return Math.PI * r * r;
+};
+exports.circumference = function(r) {
+	return 2 * Math.PI * r;
+};
+
+// foo.js
+var circle = require('./circle.js');
+console.log("The area of a circle of radius 4 is " + circle.area(4));
+
+// circle2.js Export an anonymous object
+function Circle() {
+	this.r = 1;
+}
+Circle.prototype.area = function() {
+	return Math.PI * this.r * this.r;
+};
+Circle.prototype.setRadius = function(r) {
+	this.r = r;
+};
+module.exports = new Circle();
+
+// foo2.js
+var circle2 = require('./circle2.js');
+circle2.setRadius(4);
+console.log("The area of a circle of radius 4 is " + circle2.area());
+\end{lstlisting}
+
+Node.js hat einen single-threaded Event-Loop der Requests entgegennimmt und an lange Operationen in Worker-Threads auslagert. Das Resultat wird mit einem Callback verarbeitet. Es ist wichtig dass der Event-Loop nicht blockiert wird, weil sonst der komplette Server blockiert ist.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{fig/node-eventloop}
+\caption{Event-Loop}
+\label{fig:node-eventloop}
+\end{figure}
+
+In Node.js wird aus diesem Grund zwischen blockierenden Funktionen (Sync) und nicht-blockierenden Funktionen (Async) unterschieden.
+
+\begin{lstlisting}[caption=Sychrone vs. asynchrone Funktion]
+// Synchron
+const fs = require('fs');
+const data = fs.readFileSync('/file.md');
+console.log(data);
+
+// Asynchron
+const fs = require('fs');
+fs.readFile('/file.md', (err, data) => {
+	if (err) throw err;
+	console.log(data);
+})
+\end{lstlisting}
+
+\subsection{Express}
+
+Express ist ein einfacher HTML-Server für Node.js. Node.js bringt zwar auch einen Webserver mit, allerdings ist dieser mühsam zu bedienen.
+
+\begin{lstlisting}[caption=Einfacher Express Server]
+var express = require('express');
+var app = express();
+app.get('/', function (req, res) {
+	res.send('Hello World!');
+});
+app.listen(3000, function () {
+	console.log('Example app listening on port 3000!');
+});
+\end{lstlisting}
+
+Express bietet ausserdem das Konzept der Middleware, welches ähnlich zu den Filtern in Java sind. Man kann damit die Request bzw. Response Objekte verwenden und an die nächste Middleware weitergeben.
+
 \section{Authentifizierung}
 
 Nach Woods gehört \textit{Do-It-Yourself Security} zu den Top 10 Mistakes in der Software-Entwicklung. Wir sollten besser anerkannte Methoden verwenden, wie:
