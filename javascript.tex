@@ -658,3 +658,104 @@ gulp.task('sass', function() {
 	.pipe(gulp.dest('dist/css'));
 });
 \end{lstlisting}
+
+\section{Single Page Applications}
+
+\subsection{Evolution}
+
+Zu Beginn (1990) des Webs wurden nur statische HTML-Seiten ausgeliefert und diese im Browser gerendert. Als nächsten Schritt konnte auf dem Server dynamisch HTML erzeugt werden (z.B. mit PHP), es wurde aber immer noch alles auf dem Server verarbeitet. Ab 2005 kam mit Ajax und Javascript die Wende, welche die Benutzerfreundlichkeit deutlich steigerte. Zuerst wurde HTML per Ajax-Request vom Server abgefragt und mit Javascript im Browser ersetzt. Als letzten Entwicklungsschritt ab 2010 werden JSON-Daten per Ajax vom Server geholt und im Browser wird daraus das komplette HTML generiert. 
+
+Damit hat sich das Rendering der Inhalte im Laufe der Zeit vom Server hin zum Client verschoben. Durch diese Evolution konnte der Browser das Betriebssystem abstrahieren, weil jedes Betriebssystem einen Browser hat und sich dieser mehr oder weniger überall gleich verhält. Dadurch entstehen immer mehr browserbasierte Programme (z.B. Office 365), wobei Gmail 2004 den Anfang machte.
+
+Nachfolgend noch eine Gegenüberstellung von Web- zu Desktopapplikationen.
+
+\begin{tabbing}
+	\hspace{6cm}\=\kill
+	\textbf{Web (SaaS)} \> \textbf{Desktop} \\
+	\> \\
+	Kein Backup nötig \> Security \\
+	Kein Update \> Daten Hoheit \\
+	Geringe Investitionskosten \> Hardware Zugriff \\
+	Tiefe Setupkosten \> Features des Betriebssystem \\
+	Pay as you Go \> Kalibrierte Systeme \\
+\end{tabbing} 
+
+\subsection{Definition}
+
+Nachfolgend die Definition für SPA:
+\begin{quote}
+	Web app that fits on a single web page
+	providing a fluid UX by loading all necessary
+	code with a single page load
+\end{quote}
+Aus dieser Definition lassen sich folgende Charakteristiken ableiten:
+\begin{itemize}
+	\item Rich Client Applikation im Browser
+	\item Reines HTML5 und JavaScript (kein Plugin)
+	\item Kein erneuter Page reload
+	\item  Die URL ändert nur hinter \# (oder wie gewohnt)
+	\item Back-Button funktioniert
+	\item Links sind Bookmark-bar
+	\item Funktionalität offline zu gehen
+	\item Harmoniert perfekt mit Restful Web Services
+\end{itemize}
+Abgeleitet von den oben genannten Charakteristiken ergeben sich folgende Vorteile:
+\begin{itemize}
+	\item Reach (Läuft auf jeder Plattform)
+	\item Rich User Experience
+	\item Reduced Round Tripping
+\end{itemize}
+
+\subsection{Komponenten}
+
+Abbildung \ref{fig:spa-komponenten} zeigt den Aufbau einer typischen SPA.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{fig/spa-komponenten}
+\caption{SPA Komponenten}
+\label{fig:spa-komponenten}
+\end{figure}
+
+Demzufolge besteht eine SPA aus folgenden Komponenten:
+\begin{description}
+	\item[Routing (Navigation)] \hfil \\
+	Das clientseitige Routing ermöglicht eine Navigation auf der Seite ohne Page Reload. Zudem muss der Backbutton und die Browserhistory (inkl. Bookmarks) wie gewohnt funktionieren. Vor HTML 5 wurde das mit einem Anchor (z.B. \lstinline|/#/home|) gelöst. HTML 5 bietet dafür eine eigene API mit der sich auch die Browserhistory ansteuern lässt.
+	\item[Template-Rendering (View)] \hfil \\
+	Beim Template-Rendering werden das Model über den Controller mit der View (HTML) verknüpft. Durch die Entkopplung der UI wird eine bessere Testbarkeit garantiert und durch das Binding reduziert sich der Code für das Updaten der Daten in der View.
+	\item[(Remote-)Daten Zugriff] \hfil \\
+	Die Daten werden meisten über eine REST-Schnittstelle bezogen und können bei Bedarf Zwischengespeichert werden (Cache). Die REST-Schnittstelle wird mit einem XHR-Request angesteuert und für den Cache lässt sich der LocalStorage auf dem Client verwenden.
+	\item[Modularisierung des Codes] \hfil \\
+	Durch die Modularisierung des Codes ergibt sich eine klare Struktur und was zu einer besseren Wart- bzw. Testbarkeit führt. Es sind zahlreiche Frameworks vorhanden die ein Modulsystem mitbringen (z.B. RequireJS oder TypeScritp).
+\end{description}
+
+\section{Angular 2}
+
+Angular 2 ist die zweite Version des SPA Frameworks für CRUD Anwendungen. Mit dem Framework muss man weniger Boilerplate Code schreiben und man kann seine Applikation sauber in Komponenten unterteilen. Es bietet Dependency Injection, ein performantes Binding an die View und die Unterteilung des UIs in Komponenten. Angular 2 setzt voll auf Typescript.
+
+Abbildung \ref{fig:angular2-architecture} gibt einen Überblick über die Architektur von Angular 2.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{fig/angular2-architecture}
+\caption{Angular 2 Architektur Übersicht}
+\label{fig:angular2-architecture}
+\end{figure}
+Daraus lassen sich folgende Elemente erkennen:
+\begin{description}
+	\item[Module] \hfil \\
+	Eine Angular App sollte aus Modulen bestehen, die gewisse Dinge (Klassen, Funktionen, Werte usw.) exportieren und von anderen Modulen importiert werden können. Sie lassen sich mit den Packages aus Java oder mit Namespaces aus .NET vergleichen. Das Framework selbst ist auch in Module unterteilt (z.B. \lstinline|angular2/core|)
+	\item[Component] \hfil \\
+	Eine Component ist im Besitz von gewissen Daten (Model) und kapselt auch die Logik in einer Klasse (Controller) und unterstützt so die View. Eine Component hat verschiedene Lifycycle Hooks und wird von Angular erstellt, aktualisiert und auch wieder zerstört.
+	\item[Template] \hfil \\
+	Das Template wird über die Angular Template Syntax mit Daten befüllt. Das Template ist die View für die Component.
+	\item[Metadata] \hfil \\
+	Metadata sind eigentlich Annotations die Angular sagen was es erstellen soll (z.B. über welchen Namen wird eine Component angesprochen).
+	\item[Data Binding] \hfil \\
+	Über das Data Binding werden Benutzeraktionen und Daten zwischen dem Template und der Componente ausgetauscht. 
+	\item[Directive] \hfil \\
+	Eine Direktive kann als HTML-Tag (z.B. \lstinline|<hero-detail></hero-detail|) oder als HTML-Attribut verwendet werden (z.B. \lstinline|<input [(ngModel)]="hero.name">|). Components sind eigentlich Directiven mit einem Template.
+	\item[Service] \hfil \\
+	Ein Service ist ein Container für Werte, Funktionen oder auch ein Feature einer App. Componenten konsumieren die Services. Typische Aufgaben sind auch Daten von REST-Schnittstelle holen, Benutzereingaben validieren oder ein Loggerdienst bereitstellen.
+	\item[Dependency Injection] \hfil \\
+	Dependency Injection ist in das Framework eingebaut und wird auch überall verwendet. Die Abhängigkeiten werden über Metadaten definiert. Der Injector ist verantwortlich für das Auflösen der Dependencies. Ein Provider ist ein Rezept zum Erstellen eines Services. Der Provider wird dann beim Injector registriert.
+\end{description}
