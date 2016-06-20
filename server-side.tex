@@ -53,7 +53,7 @@ Wir unterscheiden zwischen \emph{Collection Resources} (../Resource)  und \emph{
 
 \subsection{Node.js}
 
-Node.js ist eine Javascript Laufzeitumgebung, die zudem nützliche Bibliotheken (File System, Crypto, Buffers, Modules usw.) mitbringt. Die Verarbeitung verläuft asynchron und die Architektur ist event-basiert. Node.js ist leichtgewichtig und dadurch gut skalierbar.
+Node.js ist eine Javascript Laufzeitumgebung, die zudem nützliche Bibliotheken (File System, Crypto, Buffers, Modules usw.) mitbringt. Die Verarbeitung verläuft asynchron und die Architektur ist event-basiert (non-blocking I/O). Node.js ist leichtgewichtig und dadurch gut skalierbar. Das Package-Ecosystem \textit{npm} ist einer der grössten Ecosystems für Open-Source Bibliotheken weltweit.
 
 Mit dem Modulsystem von Node.js lässt sich eine Anwendung gut unterteilen. Pro Datei wird ein Modul definiert und angegeben welche Elemente exportiert werden möchten. Funktionen und Properties können entweder der \lstinline|exports|-Variable zugewiesen werden oder man verwendet den Prototyp und exportiert diesen komplett über \lstinline|module.exports|. Die letzte Variante ist als eine Art Singleton zu verstehen, weil das Object nur einmal erstellt wird.
 
@@ -128,7 +128,35 @@ app.listen(3000, function () {
 });
 \end{lstlisting}
 
-Express bietet ausserdem das Konzept der Middleware, welches ähnlich zu den Filtern in Java sind. Man kann damit die Request bzw. Response Objekte verwenden und an die nächste Middleware weitergeben.
+Express bietet ausserdem das Konzept der Middleware, welches ähnlich zu den Filtern in Java sind. Man kann damit die Request bzw. Response Objekte verwenden und an die nächste Middleware weitergeben. Beispielsweise kann an jedem Request ein Logger angehängt werden:
+
+\begin{lstlisting}[caption=Loggen jedes Requests]
+var myLogger = function (req, res, next) {
+	console.log('LOGGED');
+	next();
+};
+app.use(myLogger);
+app.get('/', function (req, res) {
+	res.send('Hello World!');
+});
+app.listen(3000);
+\end{lstlisting}
+
+Zudem können mithilfe von Express extrem schnell REST-Schnittstellen umgesetzt werden:
+
+\begin{lstlisting}[caption=REST mit Express]
+router.get('/', function(req, res, next) {
+	res.send("All travels");
+});
+router.get('/:id', function(req, res, next) {
+	var travel = {
+		id: req.params.id,
+		title: "China",
+		description: "Cold Bejing in winter"
+	};
+	res.send(travel);
+});
+\end{lstlisting}
 
 \section{Authentifizierung}
 
