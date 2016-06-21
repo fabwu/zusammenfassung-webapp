@@ -28,19 +28,14 @@ Name.prototype.hello = function(){
 var name = new Name("Thomas", "Koller");
 console.log(name.vorname);
 console.log(name.hello());
-
 // Property hinzufügen
 name.age = 99;
-
 // Property entfernen
 delete name.age;
-
 // nicht definiertes Property
 console.log(name.age); // undefined
-
 // nach Property testen
 name.hasOwnProperty("vorname"); // true
-
 // Getter / Setter ab ES5
 var otherModule = {
 	get title() {return "test"},
@@ -145,7 +140,9 @@ var donaldsName = aPerson.getFullName.apply(dDuck);
 console.log(donaldsName); // Thomas Koller
 \end{lstlisting}
 
-In Javascript wird nur pro Funktion ein neuer Scope erstellt. In Listing \ref{lst:scope} werden zwei For-Schlaufen erstellt welche zwei Variablen deklarieren. Eigentlich ist es aber nur eine Variable, weil alle Variablendeklarationen an den Anfang einer Funktion gezogen werden (Hoisting). 
+In Javascript wird nur pro Funktion ein neuer Scope erstellt. In Listing \ref{lst:scope} werden zwei For-Schlaufen erstellt welche zwei Variablen deklarieren. Eigentlich ist es aber nur eine Variable, weil alle Variablendeklarationen an den Anfang einer Funktion gezogen werden (Hoisting).
+
+\newpage
 
 \begin{lstlisting}[label=lst:scope,caption=Scope]
 function scopeTest() {
@@ -190,6 +187,8 @@ console.log(myCounter.value); // undefined
 
 Ein Vorteil von Java ist die Objektorientierung und auch die literale Syntax um Objekte zu erstellen. Auch Closures kann man ohne Probleme verwenden. Man sollte darauf achten dass man immer mit \lstinline|===| und nicht mit \lstinline|==|, sonst werden die Werte komisch umgewandelt. Auch die Verwendung von Prototypen und \lstinline|with| sollte man vermeiden. Besondere Vorsicht ist bei globalen Variablen, dem Scope und den Einfügeregeln von Semikolons geboten. Auch das Schlüsselwort \lstinline|typeof| und \lstinline|eval| sind nicht zuverlässig.
 
+\newpage
+
 \subsection{Javascript einbinden}
 Javascript kann über vier Wege eingebunden werden:
 \begin{description}
@@ -217,6 +216,8 @@ clearTimeout(myTimeout);
 myInterval = setInterval(myFunction, 1000);
 clearInterval(myInterval);
 \end{lstlisting}
+
+\newpage
 
 \subsection{DOM und CSS Manipulation}
 Mit Javascript wird primär der DOM manipuliert. 
@@ -402,6 +403,8 @@ sam.move();
 tom.move(34);
 \end{lstlisting}
 
+\newpage
+
 \subsection{Modules}
 
 In Typescript gibt es ein Modulsystem. Variablen, Funktionen usw. in einem Modul sind nicht mehr global sichtbar, ausser die welche explizit mit \lstinline|export| öffentlich gemacht wurden. Möchte man etwas von einem anderen Modul konsumieren muss man es mit dem \lstinline|import| in den eigenen Code einbinden. Jede Datei welche ein \lstinline|export| oder \lstinline|import| beinhaltet wird als Modul deklariert. 
@@ -440,6 +443,8 @@ Neben TypeScript ist in letzter Zeit auch CoffeeScript ziemlich populär geworde
 	\item Kendo UI
 	\item HTML5 Boilerplate: Gutes Template für eine HTML5 Seite. Beinhaltet HTML Template, Normalize.css, jQuery, Modernizer, Analytics u.v.m. Alternativ kann man sein Projekt auch mit yeoman aufsetzen.
 \end{itemize}
+
+\newpage
 
 \subsection{Java Script Libraries für UI}
 Das Javascript erzeugt eigentlich die Seite und wird nicht vom Server aufbereitet.
@@ -586,6 +591,8 @@ jQuery.ajax({
 
 \end{lstlisting}
 
+\newpage
+
 \subsection{Beispiel Snippets}
 
 \begin{lstlisting}[label=lst:sample-requirejs,caption=sample require.js]
@@ -610,7 +617,7 @@ require(['jquery', 'Go', 'GoBoardView', 'GoBoardModel', function ($, Go, GoBoard
 }
 \end{lstlisting}
 
-\begin{lstlisting}[label=lst:sample-grunt,caption=sample runtfile]
+\begin{lstlisting}[label=lst:sample-grunt,caption=sample Gruntfile]
 module.exports = function(grunt) {
 	grunt.initConfig({
 		jshint: {
@@ -632,6 +639,8 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['jshint']);
 };
 \end{lstlisting}
+
+\newpage
 
 \begin{lstlisting}[label=lst:sample-gulp,caption=sample gulp]
 // Include gulp
@@ -717,6 +726,8 @@ Abbildung \ref{fig:spa-komponenten} zeigt den Aufbau einer typischen SPA.
 \label{fig:spa-komponenten}
 \end{figure}
 
+\newpage
+
 Demzufolge besteht eine SPA aus folgenden Komponenten:
 \begin{description}
 	\item[Routing (Navigation)] \hfil \\
@@ -740,6 +751,7 @@ Abbildung \ref{fig:angular2-architecture} gibt einen Überblick über die Archit
 \caption{Angular 2 Architektur Übersicht}
 \label{fig:angular2-architecture}
 \end{figure}
+
 Daraus lassen sich folgende Elemente erkennen:
 \begin{description}
 	\item[Module] \hfil \\

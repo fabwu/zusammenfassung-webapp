@@ -302,6 +302,8 @@ Dient der sicheren Übertragung von JSON Objekten. Basiert auf einem Standard (R
 "alg":"HS256"}
 \end{lstlisting}
 
+\newpage
+
 Im Payload sind die benutzerdefinierten Attribute (Claims) vorhanden. Es gibt drei Typen Attributen: Standard, Public, Private:
 
 \begin{lstlisting}[caption=JWT Payload]
@@ -332,6 +334,8 @@ token = HMACSHA256(signature, secret);
 JWT sind kompakter und kleiner als XML. Es dient der einfachen Berechnung der Signature und das Parsing im Web-Umfeld wird durch das JSON-Format erleichtert. Und es ist vollständig \textbf{selfcontained}! Es wird für die Authentifizierung verwendet.
 
 \subsection{OAuth 2.0}
+
+
 
 \begin{quote}
 The OAuth 2.0 authorization framework enables a third-party
