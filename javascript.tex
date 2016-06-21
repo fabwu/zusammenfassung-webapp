@@ -194,12 +194,12 @@ Ein Vorteil von Java ist die Objektorientierung und auch die literale Syntax um 
 Javascript kann über vier Wege eingebunden werden:
 \begin{description}
 	\item[Inline] Innerhalb des HTML-Tag \lstinline|<script></script>| kann direkt Javascript-Code geschrieben werden.
-	\item[External File] Javascript-Code kann in externe Dateien ausgelagert werden, dafür wird folgends HTML-Tag mit dem Attribut \lstinline|src| benötigt: \lstinline|<script src="something.js"/>|. Der Vorteil der Auslagerung besteht darin, dass Verhalten und Struktur komplett separiert sind und die Wiederverwendung des Javascript-Codes erhöht wird. Ausserdem können die Dateien gecached werden.
+	\item[External File] Javascript-Code kann in externe Dateien ausgelagert werden, dafür wird folgendes HTML-Tag mit dem Attribut \lstinline|src| benötigt: \lstinline|<script src="something.js"/>|. Der Vorteil der Auslagerung besteht darin, dass Verhalten und Struktur komplett separiert sind und die Wiederverwendung des Javascript-Codes erhöht wird. Ausserdem können die Dateien gecached werden.
 	\item[HTML event handler] Beliebiges Javascript kann in spezifischen Attribute in HTML eingefügt werden: \lstinline|<input type="checkbox" name="options" value="giftwrap" onchange="order.options.giftwrap = this.checked;">|. Oft werden einfach Funktionen aufgerufen.
 	\item[URL mit javascript: protocol] Wie beispielsweise: \lstinline|<a href="javascript:void(0)">login</a>|.
 \end{description}
 
-Die Verarbeitung von Javascript läuft in zwei Phasen ab: In der ersten Phase wird Inline-Javascript ausgeführt und die externen Javascript Files geladen, welche synchron (default), asynchron (\lstinline|<script async>|) oder defered (\lstinline|<script defer>|) ausgeführt werden. Bei async wird der Javascript parallel zum HTML Parsing heruntergeladen und nach dem Download direkt ausgeführt. Bei defer wird der Code auch parallel zum HTML Parsing heruntergeladen aber erst nach dem HTML Parsing ausgeführt (http://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html). In der zweiten Phase werden die Event Handler asynchron ausgeführt. 
+Die Verarbeitung von Javascript läuft in zwei Phasen ab: In der ersten Phase wird Inline-Javascript ausgeführt und die externen Javascript Files geladen, welche synchron (default), asynchron (\lstinline|<script async>|) oder defered (\lstinline|<script defer>|) ausgeführt werden. Bei async wird der Javascript parallel zum HTML Parsing heruntergeladen und nach dem Download direkt ausgeführt. Bei defer wird der Code auch parallel zum HTML Parsing heruntergeladen aber erst nach dem HTML Parsing ausgeführt\footnote{\url{http://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html}}. In der zweiten Phase werden die Event Handler asynchron ausgeführt. 
 
 \subsection{Timeout und Interval}
 \begin{lstlisting}[label=lst:timeout-interval,caption=Timeout \& Interval]
@@ -225,7 +225,7 @@ Mit Javascript wird primär der DOM manipuliert.
 // Selektion über ID, ID sollte immer indeutig sein
 var elt = document.getElementById("quack");
 
-// Selektion über Name, Name muss nicht eindeutig sein
+// Selektion über nicht eindeutigen Name, kann auch mehrere Elemente zurückgeben
 var radiobuttons = document.getElementsByName("favorite_color");
 
 // Selektion über Tag-Name
@@ -267,8 +267,8 @@ request.onreadystatechange = function() {...}
 
 request.onreadystatechange = function() {
 	if (request.readyState === 4 \&\& request.status === 200) {
-	var type = request.getResponseHeader("Content-Type");
-	if (type.match(/^text/)) {
+		var type = request.getResponseHeader("Content-Type");
+		if (type.match(/^text/)) {
 			// do something with request.responseText()
 		}
 	}
