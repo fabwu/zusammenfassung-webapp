@@ -165,7 +165,7 @@ router.get('/:id', function(req, res, next) {
 Nach Woods gehört \textit{Do-It-Yourself Security} zu den Top 10 Mistakes in der Software-Entwicklung. Wir sollten besser anerkannte Methoden verwenden, wie:
 \begin{itemize}
 	\item Basic / Digest
-	\item The way Amazon does ist
+	\item The way Amazon does it
 	\item Json Web Tokes (JWT)
 	\item OAuth 2.0
 	\item WS Security
@@ -188,7 +188,7 @@ Der Client schickt daraufhin Username und Passwort im HTTP Request Header \verb|
 Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 \end{lstlisting}
 
-Achtung: Basic Authentication ist nicht sicher. Das Passwort wird im Klartext über das Netzwerk versendet und zwar immer wieder.
+Achtung: Basic Authentication ist nicht sicher. Das Passwort wird im Klartext über das Netzwerk versendet und zwar immer wieder. Mit HTTPS wäre es sicher aber es braucht zu lange das Passwort jedes mal zu kontrollieren.
 
 \subsection{Digest Authentication}
 
@@ -272,14 +272,10 @@ Amazon verwenden einen MAC (signiertem Digest-Wert). Dieser ist aus \textit{Secr
 \begin{lstlisting}[caption=S4 POST-Request mit Security Felder]
 POST https://iam.amazonaws.com/ HTTP/1.1
 Authorization: AWS4-HMAC-SHA256
-Credential=AKIDEXAMPLE/20110909/us-east-
-1/iam/aws4\_request, SignedHeaders=content-type;host;xamz-
-date,
-Signature=ced6826de92d2bdeed8f846f0bf508e8559e98e4b01991
-14b84c54174deb456c
+Credential=AKIDEXAMPLE/20110909/us-east-1/iam/aws4_request, SignedHeaders=content-type;host;xamz-date,
+Signature=ced6826de92d2bdeed8f846f0bf508e8559e98e4b0199114b84c54174deb456c
 host: iam.amazonaws.com
-Content-type: application/x-www-form-urlencoded;
-charset=utf-8
+Content-type: application/x-www-form-urlencoded;charset=utf-8
 x-amz-date: 20110909T233600Z
 Action=ListUsers\&Version=2010-05-08
 
@@ -294,7 +290,7 @@ HexEncode(Hash(RequestPayload))
 
 \subsection{JSON Web Tokens (JWT)}
 
-Dient der sicheren Übertragung von JSON Objekten. Basiert auf einem Standard (RFC7519). Ein JWT besteht aus einem Header und einem Payload. Im Header wird der Algorithmus angegeben:
+Dient der sicheren Übertragung von JSON Objekten. Basiert auf einem Standard (RFC7519). Ein JWT besteht aus einem Header,  einem Payload und der Signatur. Im Header wird der Algorithmus angegeben:
 \begin{itemize}
 	\item HS256 = HMAC SHA-256
 	\item RS256 = RSASSA-PKCS1-v1\_5 SHA-256
@@ -330,20 +326,22 @@ Der Header sowie der Payload sind Base64 codiert. Die Signatur beinhaltet Header
 
 \begin{lstlisting}[caption=JWT Signature]
 signature = base64UrlEncode(header) + "." + base64UrlEncode(payload);
-token = HMACSHA256(signature, secret)
+token = HMACSHA256(signature, secret);
 \end{lstlisting}
 
 JWT sind kompakter und kleiner als XML. Es dient der einfachen Berechnung der Signature und das Parsing im Web-Umfeld wird durch das JSON-Format erleichtert. Und es ist vollständig \textbf{selfcontained}! Es wird für die Authentifizierung verwendet.
 
 \subsection{OAuth 2.0}
 
-\textit{The OAuth 2.0 authorization framework enables a third-party
+\begin{quote}
+The OAuth 2.0 authorization framework enables a third-party
 application to obtain limited access to an HTTP service, either on
 behalf of a resource owner by orchestrating an approval interaction
 between the resource owner and the HTTP service, or by allowing
 the third-party application to obtain access on its own behalf. This
 specification replaces and obsoletes the OAuth 1.0 protocol
-describedin RFC 5849.}
+describedin RFC 5849.
+\end{quote}
 
 Wir stellen uns ein einfaches Szenario vor mit drei Elementen vor:
 
