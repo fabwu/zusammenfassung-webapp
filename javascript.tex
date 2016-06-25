@@ -2,7 +2,7 @@
 
 \section{The Basics}
 
-Javascript heisst eigentlich ECMAScript, welche aktuell in Version 6 vorliegt. Browser unterstützen aber nur Version 5.1. Zudem gibt es noch eine \lstinline|strict|-Version der Sprache. Ist der \lstinline|strict|-Modus aktiviert, muss man z.B. alle Variablen mit \lstinline|var| deklarieren. Um den \lstinline|strict|-Modus zu aktivieren muss man \lstinline|"use strict";| als erste Anweisung des Skriptes oder einer Funktion schreiben. Best Practice: Verwende  \lstinline|strict|-Modus. 
+Javascript heisst eigentlich ECMAScript, welches aktuell in Version 6 vorliegt. Browser unterstützen aber nur Version 5.1. Zudem gibt es noch eine \lstinline|strict|-Version der Sprache. Ist der \lstinline|strict|-Modus aktiviert, muss man z.B. alle Variablen mit \lstinline|var| deklarieren. Um den \lstinline|strict|-Modus zu aktivieren muss man \lstinline|"use strict";| als erste Anweisung des Skriptes oder einer Funktion schreiben. Best Practice: Verwende  \lstinline|strict|-Modus. 
 
 In Javascript gibt es nur Objekte und keine Klassen. Listing \ref{lst:objekte-deklarieren} zeigt einige Code-Beispiele im Umgang mit Objekten.
 
@@ -79,7 +79,7 @@ var oneMore = new Array(5);
 
 // Array Zugriff und Elemente hinzufuegen
 var a = ["one"];
-console.log(a[0]);
+console.log(a[0]); // one
 a[1] = "two";
 console.log(a.length); // 2
 
@@ -116,7 +116,7 @@ mult(4,5);
 
 // 2. Funktion sofort aufrufen
 var fiveToThePowerOfTwo = function(x){return x*x;}(5);
-console.log(fiveToThePowerOfTwo);
+console.log(fiveToThePowerOfTwo); // 25
 
 // 3. Funktion als Literal aufrufen
 var aPerson = {
@@ -137,7 +137,7 @@ var dDuck = {
 dDuck.getFullName(); // undefined
 
 var donaldsName = aPerson.getFullName.apply(dDuck);
-console.log(donaldsName); // Thomas Koller
+console.log(donaldsName); // Donald Duck
 \end{lstlisting}
 
 In Javascript wird nur pro Funktion ein neuer Scope erstellt. In Listing \ref{lst:scope} werden zwei For-Schlaufen erstellt welche zwei Variablen deklarieren. Eigentlich ist es aber nur eine Variable, weil alle Variablendeklarationen an den Anfang einer Funktion gezogen werden (Hoisting).
@@ -257,17 +257,15 @@ e.style.font-size = "12pt"; // Achtung: Geht nicht!
 // Event-Handlers
 window.onload = function() {...}
 // folgendes ist Equivalent, aber als "schöner" betitelt.
-window.addEventListener("load", function(){...}, false);
+window.addEventListener("load", function(){...});
 
 // Ajax
 var request = new XMLHttpRequest();
-request.open("GET", "data.json" /* url */);
+request.open("GET", "http://test.ch/data.json");
 request.setRequestHeader("Content-Type", "text/plain");
-request.send(null /* body */);
-request.onreadystatechange = function() {...}
-
+request.send();
 request.onreadystatechange = function() {
-	if (request.readyState === 4 \&\& request.status === 200) {
+	if (request.readyState === 4 && request.status === 200) {
 		var type = request.getResponseHeader("Content-Type");
 		if (type.match(/^text/)) {
 			// do something with request.responseText()
@@ -276,10 +274,16 @@ request.onreadystatechange = function() {
 }
 \end{lstlisting}
 
+\newpage
+
 Wir wissen, dass die HTML Struktur in-Memory als DOM repräsentiert wird. Wir können auf die einzelnen Nodes über folgende Attribute zugreifen: parentNode, childNodes, firstChild, lastChild, nextSibling, previousSibling, nodeType, nodeValue, nodeName. Als Beispiel \lstinline|document.childNodes[0].childNodes[1];|. HTML Attribute können wir über Javascript-Properties abfragen: \lstinline|var imgurl = image.src;|. Für alle Nicht-HTML Attribute kann setAttribute, getAttribute, hasAttribute und removeAttribute verwendet werden.
 
-Den Inhalt von Elementen kann auf drei Sichtweisen betrachtet werden. Als Beispiel dient \lstinline|<p>This is a <i>simple</i> document.</p>|. Entweder als HTML-String "<p>This is a <i>simple</i> document.</p>", Plain-Text "This is a simple document." oder als Node-Struktur.
-
+Den Inhalt von Elementen kann auf drei Sichtweisen betrachtet werden. Als Beispiel dient \lstinline|<p>This is a <i>simple</i> document.</p>|:
+\begin{description}
+	\item[HTML-String:] \textit{<p>This is a <i>simple</i> document.</p>}
+	\item[Plain-Text:] \textit{This is a simple document.}
+	\item[Node-Struktur:] Nodes im DOM
+\end{description}
 InnerHTML ist Content innerhalb des HTML Element und OuterHTML bedeutet den Inhalt des Element sowie das Element selber.
 
 \section{Typescript}
@@ -457,15 +461,16 @@ Das Javascript erzeugt eigentlich die Seite und wird nicht vom Server aufbereite
 \end{itemize}
 
 \subsection{Java Script Libraries für Build and Managing}
-\begin{itemize}
-	\item Grunt: Task-Runner.
-	\item Gulp: Task-Runner als Nachfolger von Grunt - einfachere Konfiguration.
-	\item require js: Definieren von Modulen und Abhängigkeiten zu anderen Modulen.
-	\item yeoman: Erstellt das Gerüst von neuen Web Applikationen (scaffolding).
-	\item bower: Package Manager für "Front-End Assets" für den Browser - JavaScrpt, HTML, CSS, Fonts, Images, etc. 
-	\item jslint: Starke Syntax-Prüfung.
-	\item jshint: Nachfolger von jslint, nicht mehr so stark. Wird nun eher präferiert.
-\end{itemize}
+Folgende Tools stehen im Javascript Umfeld zur Verfügung.
+\begin{description}
+	\item[Grunt:] Task-Runner.
+	\item[Gulp:] Task-Runner als Alternative zu Grunt - einfachere Konfiguration.
+	\item[require js:] Definieren von Modulen und Abhängigkeiten zu anderen Modulen.
+	\item[yeoman:] Erstellt das Gerüst von neuen Web Applikationen (scaffolding).
+	\item[bower:] Package Manager für \textit{Front-End Assets} für den Browser - JavaScript, HTML, CSS etc. 
+	\item[jslint:] Starke Syntax-Prüfung.
+	\item[jshint:] Nachfolger von jslint, nicht mehr so stark. Wird nun eher präferiert.
+\end{description}
 Die Task-Runner sind vergleichbar mit ANT. Ich konfiguriere Tasks, welche beispielsweise Typescript zu Javascript kompilieren. Oder für folgendes: Linting, Testing, Concatenation,
 Minification, Deployment. Linter prüfen Syntax und mögliche Fehler in Javascript.
 
@@ -742,15 +747,15 @@ Demzufolge besteht eine SPA aus folgenden Komponenten:
 
 \section{Angular 2}
 
-Angular 2 ist die zweite Version des SPA Frameworks für CRUD Anwendungen. Mit dem Framework muss man weniger Boilerplate Code schreiben und man kann seine Applikation sauber in Komponenten unterteilen. Es bietet Dependency Injection, ein performantes Binding an die View und die Unterteilung des UIs in Komponenten. Angular 2 setzt voll auf Typescript.
-
-Abbildung \ref{fig:angular2-architecture} gibt einen Überblick über die Architektur von Angular 2.
+Angular 2 ist die zweite Version des SPA Frameworks für CRUD Anwendungen. Mit dem Framework muss man weniger Boilerplate Code schreiben und man kann seine Applikation sauber in Komponenten unterteilen. Es bietet Dependency Injection, ein performantes Binding an die View und die Unterteilung des UIs in Komponenten. Angular 2 setzt voll auf Typescript. Abbildung \ref{fig:angular2-architecture} gibt einen Überblick über die Architektur von Angular 2.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.7\linewidth]{fig/angular2-architecture}
 \caption{Angular 2 Architektur Übersicht}
 \label{fig:angular2-architecture}
 \end{figure}
+
+\newpage
 
 Daraus lassen sich folgende Elemente erkennen:
 \begin{description}

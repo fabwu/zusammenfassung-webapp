@@ -174,7 +174,7 @@ Nach Woods gehört \textit{Do-It-Yourself Security} zu den Top 10 Mistakes in de
 	\item OAuth 1.0a
 \end{itemize}
 
-\subsection{Basic Authentication RFC 2617}
+\subsection{Basic Authentication}
 Username und Passwort werden bei jedem Request über HTTP Headers mitgeschickt. Im ersten Schritt greift der Client auf eine geschützte URL zu. Der Webserver fordert eine Authentifizierung für den angefragten Bereich (Realm) im HTTP Response Header:
 
 \begin{lstlisting}[caption=HTTP Response Header]
@@ -243,50 +243,17 @@ opaque="5ccc069c403ebaf9f0171e9517f40e41"
 Der MD5 Digest wird aus Username, Realm, Passwort, nonce, nc, cnonce, gop und URI berechnet. Auch die Digest Authentication ist keine starke Authentifizierungs-Methode im Vergleich zu Public/Private Key Mechanismen. Ein \textit{eavesdropper} kann sich problemlos dazwischen schaukeln. Trotzdem ist es stärker als die Basic Authentication. 
 
 \newpage
+
 \subsection{Amazon}
 
 Amazon verwenden einen MAC (signiertem Digest-Wert). Dieser ist aus \textit{SecretAccessKey} und einem String berechnet, welcher das HTTP-Verb, Content, Content-Type, Date, Headers und Resource Infos enthält. Es gibt mittlerweile verschiedene Versionen.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.6\linewidth]{fig/amazon-steps-1-3}
-\caption{Amazon Step 1-3}
-\label{fig:amazon-steps-1-3}
+\includegraphics[width=\linewidth]{fig/amazon-steps}
+\caption{Amazon Steps}
+\label{fig:amazon-steps}
 \end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.6\linewidth]{fig/amazon-steps-4-6}
-\caption{Amazon Step 4-6}
-\label{fig:amazon-steps-4-6}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=1\linewidth]{fig/s3getrequest}
-\caption{S3 Get-Request}
-\label{fig:s3getrequest}
-\end{figure}
-
-\newpage
-\begin{lstlisting}[caption=S4 POST-Request mit Security Felder]
-POST https://iam.amazonaws.com/ HTTP/1.1
-Authorization: AWS4-HMAC-SHA256
-Credential=AKIDEXAMPLE/20110909/us-east-1/iam/aws4_request, SignedHeaders=content-type;host;xamz-date,
-Signature=ced6826de92d2bdeed8f846f0bf508e8559e98e4b0199114b84c54174deb456c
-host: iam.amazonaws.com
-Content-type: application/x-www-form-urlencoded;charset=utf-8
-x-amz-date: 20110909T233600Z
-Action=ListUsers\&Version=2010-05-08
-
-CanonicalRequest =
-HTTPRequestMethod + '\n' +
-CanonicalURI + '\n' +
-CanonicalQueryString + '\n' +
-CanonicalHeaders + '\n' +
-SignedHeaders + '\n' +
-HexEncode(Hash(RequestPayload))
-\end{lstlisting}
 
 \subsection{JSON Web Tokens (JWT)}
 
@@ -298,8 +265,10 @@ Dient der sicheren Übertragung von JSON Objekten. Basiert auf einem Standard (R
 \end{itemize}
 
 \begin{lstlisting}[caption=JWT Header]
-{"typ":"JWT",
-"alg":"HS256"}
+{
+	"typ": "JWT",
+	"alg": "HS256"
+}
 \end{lstlisting}
 
 \newpage
@@ -307,10 +276,12 @@ Dient der sicheren Übertragung von JSON Objekten. Basiert auf einem Standard (R
 Im Payload sind die benutzerdefinierten Attribute (Claims) vorhanden. Es gibt drei Typen Attributen: Standard, Public, Private:
 
 \begin{lstlisting}[caption=JWT Payload]
-{"iss": "www.hslu.ch",
-"sub": "zakoller",
-"name": "Thomas Koller",
-"admin": true}
+{
+	"iss": "www.hslu.ch",
+	"sub": "zakoller",
+	"name": "Thomas Koller",
+	"admin": true
+}
 \end{lstlisting}
 
 Standard-Claims:
@@ -350,9 +321,9 @@ describedin RFC 5849.
 Wir stellen uns ein einfaches Szenario vor mit drei Elementen vor:
 
 \begin{itemize}
-	\item Benutzer Hans mit Ferien Fotos
-	\item Photo Store Service
-	\item Print Service
+	\item Benutzer Hans mit Ferien Fotos (Resource Owner)
+	\item Photo Store Service (Resource Server)
+	\item Print Service (Client)
 \end{itemize}
 
 Hans ist beim Photo Store Service registriert und hat mehrere Bilder gespeichert. Nun möchte er über den Print Service die Bilder drucken. Dafür müssen die Bilder vom Photo Store Service zum Print Service gelangen und zwar geschützt. Dafür gibt es mehrere Möglichkeiten:
@@ -369,13 +340,6 @@ Der OAuth2 Basic Flow sieht wie folgt aus:
 \includegraphics[width=0.7\linewidth]{fig/oauth2flow}
 \caption{OAuth2 Basic Flow}
 \label{fig:oauth2flow}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{fig/oauth2flow-refresh}
-	\caption{OAuth2 Flow with Refresh}
-	\label{fig:oauth2flow-refresh}
 \end{figure}
 
 Rollen:
@@ -396,26 +360,29 @@ Client Types:
 	\item \textbf{Public} Clients können das Passwort nicht sicher speichern (Browserbasierte App, native App auf Device).
 \end{itemize}
 
-Es existieren verschiedene Methoden um auf mittels Authorization Grant ein Zugriffstoken zu bekommen:
+\newpage
 
-\textbf{Authorization Code}
+Es existieren verschiedene Methoden um auf mittels Authorization Grant ein Zugriffstoken zu bekommen.
+
+\subsubsection{Authorization Code}
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.7\linewidth]{fig/authorization-code}
+\includegraphics[width=0.5\linewidth]{fig/authorization-code}
 \caption{Authorization Code}
 \label{fig:authorization-code}
 \end{figure}
 
-\newpage
-\textbf{Implicit}
+\subsubsection{Implicit}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{fig/implicit-grant}
+	\includegraphics[width=0.6\linewidth]{fig/implicit-grant}
 	\caption{Implicit Grant}
 	\label{fig:implicit-grant}
 \end{figure}
 
-\textbf{Resource Owner Password Credentials}
+\newpage
+
+\subsubsection{Resource Owner Password Credentials}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{fig/password-credential-grant}
@@ -423,4 +390,5 @@ Es existieren verschiedene Methoden um auf mittels Authorization Grant ein Zugri
 	\label{fig:password-credential-grant}
 \end{figure}
 
-\textbf{Client Credentials} (Nicht weiter vertieft)
+\subsubsection{Client Credentials} 
+(Nicht weiter vertieft)
